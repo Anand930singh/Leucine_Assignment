@@ -356,7 +356,8 @@ Response:
 ![image](https://github.com/user-attachments/assets/fe439790-9ede-4af8-bdfb-5464eac231d0)
 
 ### AI Summary
-[Add screenshot of AI-generated task summary]
+![image](https://github.com/user-attachments/assets/c42e1e0e-e37b-4be6-80ae-3db0de0d9416)
+
 
 ## Deployment
 
@@ -375,15 +376,3 @@ cd ToDoFrontend
 npm run build
 ```
 2. Deploy the `build` folder to your preferred hosting service
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## License
-
-This project is licensed under the MIT License.
