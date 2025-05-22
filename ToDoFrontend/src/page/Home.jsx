@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createAuthAxios, getUserData, logout } from '../utils/auth';
+import { toast } from 'react-toastify';
 import '../style/home.css';
 import ReactMarkdown from 'react-markdown';
 
@@ -69,6 +70,7 @@ function Home() {
 
   const handleLogout = () => {
     logout();
+    toast.info('Logged out successfully');
     navigate('/');
   };
 
@@ -81,11 +83,14 @@ function Home() {
       if (response.data.status === 201) {
         setNewTodo('');
         setShowAddForm(false);
+        toast.success('Task added successfully!');
         fetchTodos();
       }
     } catch (err) {
       console.error('Error adding todo:', err);
-      setError(err.response?.data?.message || 'Error adding todo');
+      const errorMsg = err.response?.data?.message || 'Error adding todo';
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -104,11 +109,14 @@ function Home() {
         setNewTodo('');
         setEditingTodo(null);
         setShowEditForm(false);
+        toast.success('Task updated successfully!');
         fetchTodos();
       }
     } catch (err) {
       console.error('Error updating todo:', err);
-      setError(err.response?.data?.message || 'Error updating todo');
+      const errorMsg = err.response?.data?.message || 'Error updating todo';
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -129,11 +137,15 @@ function Home() {
       });
 
       if (response.data.status === 200) {
+        const newStatus = todo.status === "PENDING" ? "completed" : "pending";
+        toast.success(`Task marked as ${newStatus}!`);
         fetchTodos();
       }
     } catch (err) {
       console.error('Error updating todo:', err);
-      setError(err.response?.data?.message || 'Error updating todo');
+      const errorMsg = err.response?.data?.message || 'Error updating todo status';
+      setError(errorMsg);
+      toast.error(errorMsg);
     }
   };
 
@@ -142,11 +154,14 @@ function Home() {
       const response = await authAxios.delete(`/todos/${id}`);
 
       if (response.data.status === 200) {
+        toast.success('Task deleted successfully!');
         fetchTodos();
       }
     } catch (err) {
       console.error('Error deleting todo:', err);
-      setError(err.response?.data?.message || 'Error deleting todo');
+      const errorMsg = err.response?.data?.message || 'Error deleting todo';
+      setError(errorMsg);
+      toast.error(errorMsg);
     }
   };
 
@@ -162,15 +177,43 @@ function Home() {
   const handleSummarize = async () => {
     try {
       setLoading(true);
+      toast.info('Generating task summary...');
+      
       const response = await authAxios.get('/llm/summarize-tasks');
 
       if (response.data.status === 200) {
-        setSummary(response.data.data);
+        const { summary, slackStatus } = response.data.data;
+        
+        if (!summary || summary.trim() === '') {
+          toast.warning('No tasks available to summarize');
+          return;
+        }
+        
+        setSummary(summary);
         setShowSummary(true);
+        toast.success('Task summary generated successfully!');
+        
+        // Show Slack notification status
+        if (slackStatus === 'success') {
+          toast.info('Summary sent to Slack successfully!');
+        } else if (slackStatus === 'failed') {
+          toast.warning('Failed to send summary to Slack');
+        }
+      } else {
+        const errorMsg = response.data.message || 'Failed to generate summary';
+        setError(errorMsg);
+        toast.error(errorMsg);
       }
     } catch (err) {
       console.error('Error generating summary:', err);
-      setError(err.response?.data?.message || 'Error generating summary');
+      const errorMsg = err.response?.data?.message || 'Error generating summary. Please try again.';
+      setError(errorMsg);
+      toast.error(errorMsg);
+      
+      // If it's an authentication error, redirect to login
+      if (err.response?.status === 401) {
+        navigate('/');
+      }
     } finally {
       setLoading(false);
     }

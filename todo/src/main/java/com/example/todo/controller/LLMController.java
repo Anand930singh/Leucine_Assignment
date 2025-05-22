@@ -6,6 +6,8 @@ import com.example.todo.utils.JWTUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/llm")
 public class LLMController {
@@ -31,8 +33,8 @@ public class LLMController {
                     .body(new ResponseDto<>(404, "User not found"));
             }
 
-            String summary = llmSummarizerService.summarizePendingTasks(userOptional.get());
-            return ResponseEntity.ok(new ResponseDto<>(200, "Summary generated successfully", summary));
+            Map<String, String> result = llmSummarizerService.summarizePendingTasks(userOptional.get());
+            return ResponseEntity.ok(new ResponseDto<>(200, "Summary generated successfully", result));
         } catch (Exception e) {
             return ResponseEntity.status(500)
                 .body(new ResponseDto<>(500, "Error generating summary: " + e.getMessage()));

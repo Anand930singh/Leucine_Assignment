@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 export default function Signup({ onToggle }) {
   const navigate = useNavigate();
@@ -31,13 +32,17 @@ export default function Signup({ onToggle }) {
       const response = await axios.post('https://leucine-assignment-elqt.onrender.com/api/auth/register', formData);
       
       if (response.data.status === 201) {
-        // Registration successful
+        toast.success('Registration successful! Please login.');
         onToggle(); // Switch to login form
       } else {
-        setError(response.data.message || 'Registration failed');
+        const errorMsg = response.data.message || 'Registration failed';
+        setError(errorMsg);
+        toast.error(errorMsg);
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'An error occurred during registration');
+      const errorMsg = err.response?.data?.message || 'An error occurred during registration';
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }

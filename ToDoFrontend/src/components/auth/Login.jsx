@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { setToken, setUserData } from '../../utils/auth';
 
 export default function Login({ onToggle }) {
@@ -39,14 +40,18 @@ export default function Login({ onToggle }) {
 				};
 				setUserData(userData);
 				
-				('Navigating to home...');
+				toast.success('Login successful!');
 				navigate('/home', { replace: true });
 			} else {
-				setError(response.data.message || 'Login failed');
+				const errorMsg = response.data.message || 'Login failed';
+				setError(errorMsg);
+				toast.error(errorMsg);
 			}
 		} catch (err) {
 			console.error('Login error:', err);
-			setError(err.response?.data?.message || 'An error occurred during login');
+			const errorMsg = err.response?.data?.message || 'An error occurred during login';
+			setError(errorMsg);
+			toast.error(errorMsg);
 		} finally {
 			setLoading(false);
 		}

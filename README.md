@@ -25,6 +25,112 @@ A full-stack Todo application with AI-powered task summarization using Gemini AP
 - Axios for API calls
 - Material-UI for components
 
+## System Architecture & Design Decisions
+
+### Backend Architecture
+1. **Layered Architecture**
+   - Controller Layer: REST endpoints with request validation
+   - Service Layer: Business logic and transaction management
+   - Repository Layer: Data access with JPA/Hibernate
+   - DTO Layer: Data transfer objects for API contracts
+
+2. **Security Design**
+   - JWT-based stateless authentication
+   - Password encryption using BCrypt
+   - CORS configuration for frontend security
+
+3. **Database Design**
+   - PostgreSQL with connection pooling
+   - Efficient pagination implementation
+   - Transaction management
+
+4. **Error Handling**
+   - Global exception handler
+   - Structured error responses
+
+### Frontend Architecture
+1. **Component Design**
+   - Reusable UI components
+   - Custom hooks for logic reuse
+
+2. **State Management**
+   - React Context for global state
+   - Local state for UI components
+   - Persistent auth state
+
+3. **API Integration**
+   - Axios for HTTP requests
+   - Request/response interceptors
+   - Error handling middleware
+   - API response caching
+
+## Integration Setup Guide
+
+### Slack Integration
+1. **Initial Setup**
+   ```bash
+   # Create Slack App
+   1. Go to api.slack.com/apps
+   2. Click "Create New App"
+   3. Choose "From scratch"
+   4. Name your app and select workspace
+   ```
+
+2. **Webhook Configuration**
+   ```bash
+   # Enable Incoming Webhooks
+   1. Go to "Incoming Webhooks"
+   2. Toggle "Activate Incoming Webhooks"
+   3. Click "Add New Webhook to Workspace"
+   4. Choose channel and authorize
+   ```
+
+3. **Environment Setup**
+   ```properties
+   # application.properties
+   slack.webhook.url=${SLACK_WEBHOOK_URL}
+   slack.notification.enabled=true
+   slack.channel=#your-channel
+   ```
+
+4. **Notification Types**
+   - Task Creation: New task alerts
+   - Task Updates: Status changes
+   - Task Completion: Achievement notifications
+   - Error Alerts: System issues
+
+### Gemini LLM Integration
+1. **Google Cloud Setup**
+   ```bash
+   # Enable Gemini API
+   1. Go to Google Cloud Console
+   2. Create new project
+   3. Enable Gemini API
+   4. Create API key
+   ```
+
+2. **Configuration**
+   ```properties
+   # application.properties
+   gemini.api.key=${GEMINI_API_KEY}
+   gemini.api.url=${GEMINI_API_URL}
+   gemini.model.name=gemini-pro
+   gemini.max.tokens=1000
+   ```
+
+3. **Implementation Features**
+   - Task Summarization
+     ```java
+     // Example usage
+     @Autowired
+     private GeminiService geminiService;
+     
+     public String summarizeTasks(List<Todo> tasks) {
+         return geminiService.generateSummary(tasks);
+     }
+     ```
+
+
 ## Prerequisites
 
 - Java 21

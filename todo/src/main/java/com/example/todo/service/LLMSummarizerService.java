@@ -11,6 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +21,7 @@ import java.util.Map;
 @Service
 public class LLMSummarizerService {
 
+    private static final Logger logger = LoggerFactory.getLogger(LLMSummarizerService.class);
     private final ToDoRepository toDoRepository;
     private final RestTemplate restTemplate;
     private final String apiKey;
@@ -38,28 +41,41 @@ public class LLMSummarizerService {
     }
 
     @Transactional(readOnly = true)
-    public String summarizePendingTasks(Users user) {
+    public Map<String, String> summarizePendingTasks(Users user) {
+        Map<String, String> result = new HashMap<>();
         try {
             List<Todo> pendingTasks = toDoRepository.findByUserAndStatus(user, Status.PENDING);
 
             if (pendingTasks.isEmpty()) {
-                return "No pending tasks found.";
+                logger.info("No pending tasks found for user: {}", user.getUsername());
+                result.put("summary", "No pending tasks found.");
+                result.put("slackStatus", "skipped");
+                return result;
             }
 
             String prompt = createPrompt(pendingTasks);
+            logger.debug("Generated prompt for user {}: {}", user.getUsername(), prompt);
+            
             String summary = getGeminiSummary(prompt);
+            logger.info("Generated summary for user {}: {}", user.getUsername(), summary);
+            result.put("summary", summary);
 
-            // ✅ Send summary to Slack
-            slackNotifierService.sendToSlack("*Summary for " + user.getUsername() + ":*\n" + summary);
+            try {
+                slackNotifierService.sendToSlack("*Summary for " + user.getUsername() + ":*\n" + summary);
+                result.put("slackStatus", "success");
+            } catch (Exception e) {
+                logger.error("Failed to send summary to Slack: {}", e.getMessage());
+                result.put("slackStatus", "failed");
+            }
 
-            return summary;
+            return result;
         } catch (Exception e) {
-            e.printStackTrace();
-            return "Error generating summary: " + e.getMessage();
+            logger.error("Error generating summary for user {}: {}", user.getUsername(), e.getMessage(), e);
+            result.put("summary", "Error generating summary: " + e.getMessage());
+            result.put("slackStatus", "failed");
+            return result;
         }
     }
-
-
 
     private String createPrompt(List<Todo> tasks) {
         StringBuilder prompt = new StringBuilder();
@@ -89,11 +105,13 @@ public class LLMSummarizerService {
 
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
             
+            logger.debug("Sending request to Gemini API: {}", requestBody);
             Map<String, Object> response = restTemplate.postForObject(
                 apiUrl,
                 request,
                 Map.class
             );
+            logger.debug("Received response from Gemini API: {}", response);
 
             if (response != null && response.containsKey("candidates")) {
                 List<Map<String, Object>> candidates = (List<Map<String, Object>>) response.get("candidates");
@@ -107,10 +125,11 @@ public class LLMSummarizerService {
                 }
             }
             
+            logger.warn("No summary generated from Gemini API response");
             return "No summary generated.";
         } catch (Exception e) {
-            e.printStackTrace();
-            return "Error getting summary from Gemini: " + e.getMessage();
+            logger.error("Error getting summary from Gemini API: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to get summary from Gemini API: " + e.getMessage());
         }
     }
 } 
