@@ -29,12 +29,9 @@ function Home() {
   const authAxios = createAuthAxios();
 
   useEffect(() => {
-    console.log('Home component mounted');
     try {
       const user = getUserData();
-      console.log('User data:', user);
       if (!user) {
-        console.log('No user data found, redirecting to home');
         navigate('/');
         return;
       }
@@ -48,14 +45,12 @@ function Home() {
 
   const fetchTodos = async () => {
     try {
-      console.log('Fetching todos...');
       setLoading(true);
       const response = await authAxios.post('/todos/filter', {
         ...filter,
         page: currentPage - 1,
         size: itemsPerPage
       });
-      console.log('Todos response:', response.data);
 
       if (response.data.status === 200) {
         setTodos(response.data.data.content);

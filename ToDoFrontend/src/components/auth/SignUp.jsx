@@ -28,7 +28,7 @@ export default function Signup({ onToggle }) {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:4040/api/auth/register', formData);
+      const response = await axios.post('https://leucine-assignment-elqt.onrender.com/api/auth/register', formData);
       
       if (response.data.status === 201) {
         // Registration successful

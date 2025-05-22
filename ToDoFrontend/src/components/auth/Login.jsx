@@ -28,24 +28,18 @@ export default function Login({ onToggle }) {
 		setError('');
 
 		try {
-			const response = await axios.post('http://localhost:4040/api/auth/login', formData);
-			console.log('Login response:', response.data);
+			const response = await axios.post('https://leucine-assignment-elqt.onrender.com/api/auth/login', formData);
 			
 			if (response.data.status === 200) {
-				// Store token
 				setToken(response.data.data.token);
-				console.log('Token stored:', response.data.data.token);
 				
-				// Store user data
 				const userData = {
 					username: formData.userNameOrEmail,
 					email: formData.userNameOrEmail.includes('@') ? formData.userNameOrEmail : null
 				};
 				setUserData(userData);
-				console.log('User data stored:', userData);
 				
-				// Navigate to home
-				console.log('Navigating to home...');
+				('Navigating to home...');
 				navigate('/home', { replace: true });
 			} else {
 				setError(response.data.message || 'Login failed');
