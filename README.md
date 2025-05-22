@@ -2,6 +2,13 @@
 
 A full-stack Todo application with AI-powered task summarization using Gemini API and Slack notifications.
 
+## ⚠️ Important Note
+The backend is hosted on Render's free tier, which means:
+- The first request after inactivity (cold start) may take 3-4 minutes to respond
+- This is normal behavior for free tier hosting services
+- Subsequent requests will be much faster
+- Please be patient during the initial load
+
 ## Features
 
 - User authentication with JWT
