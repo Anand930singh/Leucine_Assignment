@@ -47,13 +47,13 @@ cd todo
 Create a `.env` file in the `todo` directory with:
 ```
 PORT=4040
-DATABASE_URL=jdbc:postgresql://aws-0-ap-south-1.pooler.supabase.com:5432/postgres
-DATABASE_USERNAME=postgres.kvgmoomibfjrsemckshh
-DATABASE_PASSWORD=Todoapp@2002
-GEMINI_API_KEY=your_gemini_api_key
-GEMINI_API_URL=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
-SLACK_WEBHOOK_URL=your_slack_webhook_url
-JWT_SECRET=your_jwt_secret
+DATABASE_URL=xxxxxxxxx
+DATABASE_USERNAME=xxxxxxxxxx
+DATABASE_PASSWORD=xxxxxxxxxxxxx
+GEMINI_API_KEY=xxxxxxxxxxxxxxx
+GEMINI_API_URL=xxxxxxxxxxxx
+SLACK_WEBHOOK_URL=xxxxxxxxxxxxx
+JWT_SECRET=xxxxxxxxxxxxxxxxx
 ```
 
 3. Build and run the backend:
@@ -240,16 +240,14 @@ Response:
 ## Screenshots
 
 ### Authentication
-[Add screenshot of login/register pages]
+![image](https://github.com/user-attachments/assets/f5306820-cee9-4f13-ae56-29d6ac7d3772)
+![image](https://github.com/user-attachments/assets/892992bb-c8e3-4d96-8b0d-7cd3cc979501)
 
 ### Todo List
-[Add screenshot of todo list view]
+![image](https://github.com/user-attachments/assets/8555f927-a65d-452b-aa1f-a5d4673d9563)
 
 ### Todo Creation
-[Add screenshot of todo creation form]
-
-### Todo Details
-[Add screenshot of todo details view]
+![image](https://github.com/user-attachments/assets/fe439790-9ede-4af8-bdfb-5464eac231d0)
 
 ### AI Summary
 [Add screenshot of AI-generated task summary]
